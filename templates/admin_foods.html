@@ -1,0 +1,17 @@
+<h2>All Food Items</h2>
+
+{% for food in foods %}
+    <div style="border:1px solid #ccc; padding:10px; margin:10px;">
+        <img src="{{ url_for('static', filename=food['image']) }}" width="120">
+        <h3>{{ food['name'] }}</h3>
+        <p>₦{{ food['price'] }}</p>
+
+      <a href="{{ url_for('delete_food', id=food['id']) }}"
+   onclick="return confirm('Are you sure you want to delete this food?')">
+    <button style="background:red; color:white;">
+        Delete
+    </button>
+</a>  
+
+    </div>
+{% endfor %}

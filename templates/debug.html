@@ -1,0 +1,7 @@
+<h2>Admin Table</h2>
+
+{% for admin in admins %}
+    <p>
+            username: {{ admin[1] }}, password: {{ admin[2] }}
+    </p>
+{% endfor %}

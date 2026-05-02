@@ -1,0 +1,23 @@
+<h2>Orders</h2>
+
+<a href="/admin_dashboard">Back</a>
+
+<ul>
+{% for order in orders %}
+    <li>
+        <p><b>User:</b> {{ order["user"] }}</p>
+        <p><b>Items:</b> {{ order["items"] }}</p>
+        <p><b>Total:</b> ₦{{ order["total"] }}</p>
+
+        <p>
+            <b>Status:</b> 
+           {% if order["status"] == "Pending" %}
+    <a href="/update_order/{{ order['id'] }}" 
+       onclick="return confirm('Mark this order as delivered?')">
+       Mark as Delivered
+            </a>
+        {% endif %}
+    </li>
+    <hr>
+{% endfor %}
+</ul>

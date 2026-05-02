@@ -1,0 +1,20 @@
+<h2>Your Orders</h2>
+
+{% for order in orders %}
+<div>
+    <p>User: {{ order['user'] }}</p>
+    <p>Items: {{ order['items'] }}</p>
+    <p>Total: ₦{{ order['total'] }}</p>
+    <p>Status: {{ order['status'] }}</p>
+
+    <form method="POST" action="/update_status">
+        <input type="hidden" name="order_id" value="{{ order['id'] }}">
+        <select name="status">
+            <option>Preparing</option>
+            <option>Ready</option>
+        </select>
+        <button type="submit">Update</button>
+    </form>
+</div>
+<hr>
+{% endfor %}

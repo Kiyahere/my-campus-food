@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+</head>
+<body style="font-family:Arial;
+background-color: #f5f5f5;
+ text-align:center;">
+
+ <div style="
+    width:200px;
+    height:100vh;
+    background:#222;
+    color:white;
+    position:fixed;
+    left:0;
+    top:0;
+    padding:20px;
+">
+
+
+    <h2>Admin</h2>
+    <a href="/dashboard" style="color:white; display:block; margin:10px 0;">Dashboard</a>
+    <a href="/add_food" style="color:white; display:block; margin:10px 0;">Add Food</a>
+    <a href="/logout" style="color:white; display:block; margin:10px 0;">Logout</a>
+ </div>
+
+    <h1 style="background-color: #333; color: #ff6b00;
+    color:white; padding: 15px;">🛠️ Admin Dashboard</h1>
+    <h3>Welcome, {{ session.get('admin') }}</h3>
+
+    <ul>
+        <li><a href="/add_food">➕ Add Food</a></li>
+        <li><a href="/view_foods">View Foods</a></li>
+        <li><a href="/view_orders">View Orders</a></li>
+        <li><a href="/admin/foods">🍔 Manage Foods</a></li>
+        <li><a href="/logout">Logout</a></li>
+    </ul>
+
+    <h2>Quick Preview</h2>
+
+    {% for food in foods %}
+
+    <div style="
+        background:white;
+        border-radius:10px;
+        padding:15px;
+        margin:10px;
+        display:inline-block;
+        box-shadow:0 2px 8px rgba(0,0,0,0.1);
+    ">
+
+        <img src="{{ url_for('static', filename=food['image']) }}" width="120">
+        <h3>{{ food['name'] }}</h3>
+        <p>₦{{ food['price'] }}</p>
+        <form method="POST" action="/assign_rider">
+    <input type="hidden" name="order_id" value="{{ order['id'] }}">
+    
+    <select name="rider">
+        <option>Rider1</option>
+        <option>Rider2</option>
+    </select>
+
+    <button type="submit">Assign Rider</button>
+</form>
+
+        <a href="{{ url_for('delete_food', id=food['id']) }}"
+           onclick="return confirm('Are you sure?')">
+
+            <button style="
+                background-color:#ff6b00;
+                color:white;
+                border:none;
+                padding:8px 12px;
+                border-radius:5px;
+                cursor:pointer;
+            ">
+                Delete
+            </button>
+
+        </a>
+
+    </div>
+
+{% endfor %}
+
+</body>
+</html>

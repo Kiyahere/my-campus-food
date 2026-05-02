@@ -1,0 +1,16 @@
+<h2>Assigned Deliveries</h2>
+
+{% for order in orders %}
+<div>
+    <p>User: {{ order['user'] }}</p>
+    <p>Items: {{ order['items'] }}</p>
+    <p>Location: {{ order['user'] }}</p>
+    <p>Status: {{ order['status'] }}</p>
+
+    <form method="POST" action="/deliver_order">
+        <input type="hidden" name="order_id" value="{{ order['id'] }}">
+        <button type="submit">Mark Delivered</button>
+    </form>
+</div>
+<hr>
+{% endfor %}
