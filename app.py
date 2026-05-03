@@ -121,7 +121,7 @@ def admin_login():
 
         conn.close()
 
-        if admin and check_password_hash(admin["password"], password):
+        if admin and admin["password"] == password:
             session["admin"] = username
             return redirect("/admin_dashboard")
         else:
