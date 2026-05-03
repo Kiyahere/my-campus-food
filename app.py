@@ -1,9 +1,13 @@
-from flask import Flask, render_template, request, redirect, session
-from werkzeug.security import check_password_hash
+import os
 import sqlite3
 import requests
 from functools import wraps
-from werkzeug.security import generate_password_hash
+
+from flask import Flask, render_template, request, redirect, session
+from werkzeug.security import check_password_hash, generate_password_hash
+generate_password_hash
+from werkzeug.utils import secure_filename
+
 app = Flask(__name__)
 
 @app.route("/")
@@ -336,7 +340,6 @@ def add_food():
     if request.method == "POST":
         name = request.form["name"]
         price = request.form["price"]
-
         file = request.files["image"]
 
         if file.filename == "":
@@ -344,15 +347,16 @@ def add_food():
 
         filename = secure_filename(file.filename)
 
-        path = os.path.join("static/images", filename)
-        file.save(path)
+        upload_folder = "static/uploads"
+        os.makedirs(upload_folder, exist_ok=True)
 
-        image_path = "images/" + filename
+        path = os.path.join(upload_folder, filename)
+        file.save(path)
 
         conn = get_db()
         conn.execute(
             "INSERT INTO foods (name, price, image) VALUES (?, ?, ?)",
-            (name, price, image_path)
+            (name, price, filename)
         )
         conn.commit()
         conn.close()
