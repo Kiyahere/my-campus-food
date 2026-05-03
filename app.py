@@ -147,6 +147,15 @@ def admin_login_test():
     return "Admin route exists"
 
 
+    @app.route('/create_admins')
+def create_admins():
+    conn = get_db()
+    conn.execute("INSERT INTO admins (username, password) VALUES (?, ?)", ("FoodApp@2026", "1234"))
+    conn.commit()
+    conn.close()
+    return "Admins created!"
+
+
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
     if request.method == "POST":
@@ -204,6 +213,18 @@ def menu():
     conn.close()
 
     return render_template("menu.html", foods=foods)
+
+
+    @app.route('/create_admin')
+def create_admin():
+    conn = get_db()
+    conn.execute(
+        "INSERT INTO admins (username, password) VALUES (?, ?)",
+        ("FoodApp@2026", "1234")
+    )
+    conn.commit()
+    conn.close()
+    return "Admin created successfully"
 
 
 
