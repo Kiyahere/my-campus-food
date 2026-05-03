@@ -111,8 +111,8 @@ def admin_login():
 
         conn = get_db()
 
-        username = request.form["username"]
-        password = request.form["password"]
+        username = request.form.get("username")
+        password = request.form.get("password")
 
         admin = conn.execute(
             "SELECT * FROM admins WHERE username = ?",
@@ -124,14 +124,11 @@ def admin_login():
         if admin and check_password_hash(admin["password"], password):
             session["admin"] = username
             return redirect("/admin_dashboard")
-        elif admin["role"] == "vendor":
-            session["vendor"] = username
-            return redirect("/vendor_dashboard")
-        elif admin["role"] == "rider":
-            session["rider"] = username
-            return redirect("/rider_dashboard")
+        else:
+            return "Invalid credentials"
 
     return render_template("admin_login.html")
+
 
 # ---------------- HOME ----------------
 @app.route("/")
