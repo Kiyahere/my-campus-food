@@ -50,7 +50,7 @@ background-color: #f5f5f5;
         box-shadow:0 2px 8px rgba(0,0,0,0.1);
     ">
 
-        <img src="{{ url_for('static', filename=food['image']) }}" width="120">
+        <img src="{{ url_for('static', filename='uploads/' + food['image']) }}" width="120">
         <h3>{{ food['name'] }}</h3>
         <p>₦{{ food['price'] }}</p>
         <form method="POST" action="/assign_rider">
