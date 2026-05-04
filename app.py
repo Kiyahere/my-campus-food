@@ -103,7 +103,12 @@ CREATE TABLE IF NOT EXISTS riders (
     username TEXT,
     password TEXT
 )
-""")    
+""") 
+    
+    conn.execute("UPDATE foods SET image = REPLACE(image, 'static/uploads/', '')")
+    conn.execute("UPDATE foods SET image = REPLACE(image, '/static/uploads/', '')")
+
+
     
     conn.commit()
     conn.close()
