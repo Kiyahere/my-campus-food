@@ -6,6 +6,9 @@
         <h3>{{ food['name'] }}</h3>
         <p>₦{{ food['price'] }}</p>
         <p>Image: {{ food['image'] }}</p>
+        <p>Image value: {{ food['image'] }}</p>
+        <p>Full path: {{ url_for('static', filename='uploads/' + food['image']) }}</p>
+        <img src="{{ url_for('static', filename='uploads/' + food['image']) }}" width="120">
 
       <a href="{{ url_for('delete_food', id=food['id']) }}"
    onclick="return confirm('Are you sure you want to delete this food?')">
