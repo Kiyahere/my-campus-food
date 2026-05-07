@@ -1,20 +1,67 @@
+from supabase import create_client
 import os
+import uuid
 import sqlite3
 import requests
 from functools import wraps
 
-from flask import Flask, render_template, request, redirect, session
+from flask import Flask, render_template, render_template_string, request, redirect, session, url_for
+render_template_string
 from werkzeug.security import check_password_hash, generate_password_hash
-generate_password_hash
 from werkzeug.utils import secure_filename
+from dotenv import load_dotenv
+
+load_dotenv(dotenv_path=".env")
+
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
 app = Flask(__name__)
+app.secret_key = "secret123"
 
-@app.route("/")
+supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+HTML = """
+<h2>Supabase Upload Test</h2>
+<form method="POST" enctype="multipart/form-data">
+  <input type="file" name="file">
+  <button type="submit">Upload</button>
+</form>
+
+{% if url %}
+<p>Uploaded successfully!</p>
+<p><a href="{{ url }}" target="_blank">View File</a></p>
+{% endif %}
+"""
+
+@app.route("/test-upload", methods=["GET", "POST"])
+def test_upload():
+    url = None
+
+    if request.method == "POST":
+        file = request.files.get("file")
+
+        if file:
+            filename = str(uuid.uuid4()) + file.filename
+            file_bytes = file.read()
+
+            supabase.storage.from_("food-images").upload(
+                filename,
+                file_bytes
+            )
+
+            url = supabase.storage.from_("food-images").get_public_url(filename)
+
+    return render_template_string(HTML, url=url)
+
+
+print(f"URL: {SUPABASE_URL}")
+print("KEY:", SUPABASE_KEY[:10] if SUPABASE_KEY else None)
+
+@app.route('/')
 def index():
     return render_template("index.html")
 
-app.secret_key = "secret123"
 
 def admin_required(f):
     @wraps(f)
@@ -79,6 +126,16 @@ CREATE TABLE IF NOT EXISTS admins (
 )
 """)
 
+
+    conn.execute("""
+CREATE TABLE IF NOT EXISTS students (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT UNIQUE,
+    password TEXT
+)
+""")
+
+
     cursor.execute("""
 CREATE TABLE IF NOT EXISTS notifications (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -137,6 +194,10 @@ def admin_login():
             return "Invalid credentials"
 
     return render_template("admin_login.html")
+
+
+    print("SUPABASE_URL:", SUPABASE_URL)
+print("SUPABASE_KEY loaded:", bool(SUPABASE_KEY))
 
 
 # ---------------- HOME ----------------
@@ -332,43 +393,43 @@ def verify_payment():
         return  redirect("/payment-success")
     else:
         return "Payment Failed"   
+    
 
 # ---------------- ADD FOOD ----------------
-import os
-from werkzeug.utils import secure_filename
-
 @app.route("/add_food", methods=["GET", "POST"])
 def add_food():
     if "admin" not in session:
         return redirect("/admin_login")
 
-    if request.method == "POST":
-        name = request.form["name"]
-        price = request.form["price"]
-        file = request.files["image"]
+    if request.method == "GET":
+        return render_template("add_food.html")
 
-        if file.filename == "":
-            return "No image selected"
+    name = request.form.get("name")
+    price = request.form.get("price")
+    file = request.files.get("image")
 
-        filename = secure_filename(file.filename)
+    if not name or not price:
+        return "Missing name or price"
 
-        upload_folder = "static/uploads"
-        os.makedirs(upload_folder, exist_ok=True)
+    if not file or file.filename == "":
+        return "No image selected"
 
-        path = os.path.join(upload_folder, filename)
-        file.save(path)
+    filename = file.filename
+    file_bytes = file.read()
 
-        conn = get_db()
-        conn.execute(
-            "INSERT INTO foods (name, price, image) VALUES (?, ?, ?)",
-            (name, price, filename)
-        )
-        conn.commit()
-        conn.close()
+    supabase.storage.from_("food-images").upload(filename, file_bytes)
+    image_url = supabase.storage.from_("food-images").get_public_url(filename)
 
-        return redirect("/admin_dashboard")
+    conn = sqlite3.connect("foods.db")
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO foods (name, price, image) VALUES (?, ?, ?)",
+        (name, price, image_url)
+    )
+    conn.commit()
+    conn.close()
 
-    return render_template("add_food.html")
+    return redirect("/admin_dashboard")
 
 
 
@@ -388,14 +449,14 @@ def view_foods():
 @app.route("/delete_food/<int:id>")
 def delete_food(id):
     if "admin" not in session:
-        return redirect("/admin_login")
+        return redirect(url_for("/admin_login"))
 
     conn = get_db()
     conn.execute("DELETE FROM foods WHERE id = ?", (id,))
     conn.commit()
     conn.close()
 
-    return redirect("/delete_foods")
+    return redirect(url_for("/delete_foods"))
 
 
 
@@ -655,4 +716,8 @@ def logout():
 # ---------------- RUN APP ----------------
 if __name__ == "__main__":
     init_db()
+    conn = get_db()
+    print(conn.execute("SELECT * FROM students").fetchall())
+    conn.close()
+    
     app.run(debug=True)
