@@ -16,14 +16,16 @@ load_dotenv(dotenv_path=".env")
 SUPABASE_URL = os.getenv("https://iieupxswfvxmmcjqzdml.supabase.co")
 SUPABASE_KEY = os.getenv("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpZXVweHN3ZnZ4bW1janF6ZG1sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwOTg0ODIsImV4cCI6MjA5MzY3NDQ4Mn0.90CwhwMvmO-3xKK_wKaGyUx3OyLq-xX2AWpVTdas4Z4")
 
-app = Flask(__name__)
-app.secret_key = "secret123"
+if not SUPABASE_KEY:
+    raise Exception("Missing SUPABASE_KEY environment variable")
+if not SUPABASE_URL:
+ raise Exception("Missing SUPABASE_URL environment variable")
 
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 HTML = """
 <h2>Supabase Upload Test</h2>
-<form method="POST" enctype="multipart/form-data">
+ <form method="POST" enctype="multipart/form-data">
   <input type="file" name="file">
   <button type="submit">Upload</button>
 </form>
@@ -34,7 +36,7 @@ HTML = """
 {% endif %}
 """
 
-@app.route("/test-upload", methods=["GET", "POST"])
+@app.route("/test supabase-upload", methods=["GET", "POST"])
 def test_upload():
     url = None
 
@@ -194,10 +196,6 @@ def admin_login():
             return "Invalid credentials"
 
     return render_template("admin_login.html")
-
-
-    print("SUPABASE_URL:", SUPABASE_URL)
-print("SUPABASE_KEY loaded:", bool(SUPABASE_KEY))
 
 
 # ---------------- HOME ----------------
