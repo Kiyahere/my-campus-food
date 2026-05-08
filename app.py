@@ -418,8 +418,18 @@ def add_food():
     filename = file.filename
     file_bytes = file.read()
 
+    supabase.storage.from_("food-images").upload(filename, file.read(), {"content_type": file.content_type})s
+
     supabase.storage.from_("food-images").upload(filename, file_bytes)
     image_url = supabase.storage.from_("food-images").get_public_url(filename)
+
+    supabase.table("foods").insert({
+        "name": name,
+        "price": int(price),
+        "image": image_url
+    }).execute()
+
+    return redirect("/sdmin_dashboard")
 
     conn = sqlite3.connect("foods.db")
     cursor = conn.cursor()
