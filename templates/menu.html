@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+[2:13 PM, 5/7/2026] kiyahere5: <!DOCTYPE html>
 <html>
 <head>
     <title>Menu</title>
@@ -16,7 +16,7 @@
     <div class="menu">
         {% for food in foods %}
         <div class="food-card">
-        <img src="{{ food[imageS] }}" width="120">
+        <img src="{{ food['image'] }}" width="120">
 
         <h3>{{ food['name'] }}</h3>
         <p>₦{{ food['price'] }}</p>
@@ -30,5 +30,61 @@
       <a href="/cart">View Cart</a>|
       <a href="/orders">Track Orders</a>@
     </div>
+</body>
+</html>
+[3:07 PM, 5/7/2026] kiyahere5: <!DOCTYPE html>
+<html>
+<head>
+    <title>Menu</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+    .menu {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        padding: 20px;
+    }
+
+    .food-card {
+        border: 1px solid #ddd;
+        padding: 15px;
+        border-radius: 10px;
+        background: white;
+    }
+    </style>
+</head>
+
+<body style="font-family:Arial; text-align:center;">
+
+    <h1>🍽️ Food Menu</h1>
+
+    <a href="/">Home</a> | 
+    <a href="/logout">Logout</a>
+
+    <hr>
+
+    <div class="menu">
+
+        {% for food in foods %}
+        <div class="food-card">
+
+            <img src="{{ url_for('static', filename='uploads/' + food['image']) }}" width="120">
+
+            <h3>{{ food['name'] }}</h3>
+            <p>₦{{ food['price'] }}</p>
+
+            <a href="/add-to-cart/{{ food['id'] }}">
+                <button>Add to Cart</button>
+            </a>
+
+        </div>
+        {% endfor %}
+
+    </div>
+
+    <a href="/cart">View Cart</a> |
+    <a href="/orders">Track Orders</a>
+
 </body>
 </html>

@@ -229,43 +229,44 @@ def signup():
         username = request.form["username"]
         password = request.form["password"]
 
-        conn = get_db()
         try:
-            conn.execute(
-                "INSERT INTO users (username, password) VALUES (?, ?)",
-                (username, password)
-            )
-            conn.commit()
-        except:
-            return "Username already exists"
-        conn.close()
+            supabase.table("users").insert({
+                "username": username,
+                "password": password
+            }).execute()
+        except Exception as e:
+            return f"Error: {str(e)}"
 
         return redirect("/login")
 
     return render_template("signup.html")
+    
 
-
-@app.route("/login", methods=["GET", "POST"])
+ @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
 
-        conn = get_db()
-        user = conn.execute(
-            "SELECT * FROM users WHERE username=? AND password=?",
-            (username, password)
-        ).fetchone()
-        conn.close()
+        try:
+            response = supabase.table("users") \
+                .select("*") \
+                .eq("username", username) \
+                .eq("password", password) \
+                .execute()
 
-        if user:
-            session["user"] = username
-            return redirect("/menu")
-        else:
-            return "Invalid login"
+            user = response.data
+
+            if user and len(user) > 0:
+                session["user"] = username
+                return redirect("/menu")
+            else:
+                return "Invalid login"
+
+        except Exception as e:
+            return f"Login error: {str(e)}"
 
     return render_template("login.html")
-
 
 
 # ---------------- MENU ----------------
@@ -456,7 +457,7 @@ def delete_food(id):
     conn.commit()
     conn.close()
 
-    return redirect(url_for("/delete_foods"))
+    return redirect("/admin")
 
 
 
