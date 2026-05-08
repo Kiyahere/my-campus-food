@@ -13,8 +13,8 @@ from dotenv import load_dotenv
 
 load_dotenv(dotenv_path=".env")
 
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+SUPABASE_URL = os.getenv("https://iieupxswfvxmmcjqzdml.supabase.co")
+SUPABASE_KEY = os.getenv("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpZXVweHN3ZnZ4bW1janF6ZG1sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwOTg0ODIsImV4cCI6MjA5MzY3NDQ4Mn0.90CwhwMvmO-3xKK_wKaGyUx3OyLq-xX2AWpVTdas4Z4")
 
 app = Flask(__name__)
 app.secret_key = "secret123"
@@ -723,10 +723,9 @@ def logout():
 
 
 # ---------------- RUN APP ----------------
+
+import os
+
 if __name__ == "__main__":
-    init_db()
-    conn = get_db()
-    print(conn.execute("SELECT * FROM students").fetchall())
-    conn.close()
-    
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
