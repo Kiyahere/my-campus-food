@@ -399,6 +399,7 @@ def verify_payment():
 # ---------------- ADD FOOD ----------------
 @app.route("/add_food", methods=["GET", "POST"])
 def add_food():
+
     if "admin" not in session:
         return redirect("/admin_login")
 
@@ -416,29 +417,26 @@ def add_food():
         return "No image selected"
 
     filename = file.filename
+
+    # Read image once
     file_bytes = file.read()
 
-    supabase.storage.from_("food-images").upload(filename, file.read(), {"content_type": file.content_type})
+    # Upload to Supabase Storage
+    supabase.storage.from_("food-images").upload(
+        filename,
+        file_bytes,
+        {"content-type": file.content_type}
+    )
 
-    supabase.storage.from_("food-images").upload(filename, file_bytes)
+    # Get public URL
     image_url = supabase.storage.from_("food-images").get_public_url(filename)
 
+    # Save into Supabase database
     supabase.table("foods").insert({
         "name": name,
         "price": int(price),
         "image": image_url
     }).execute()
-
-    return redirect("/admin_dashboard")
-
-    conn = sqlite3.connect("foods.db")
-    cursor = conn.cursor()
-    cursor.execute(
-        "INSERT INTO foods (name, price, image) VALUES (?, ?, ?)",
-        (name, price, image_url)
-    )
-    conn.commit()
-    conn.close()
 
     return redirect("/admin_dashboard")
 
