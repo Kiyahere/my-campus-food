@@ -255,23 +255,18 @@ def login():
         username = request.form["username"]
         password = request.form["password"]
 
-        try:
-            response = supabase.table("users") \
-                .select("*") \
-                .eq("username", username) \
-                .eq("password", password) \
-                .execute()
+        result = supabase.table("users").select("*").eq("username", username).execute()
+            
+        if result.data:
+                user = result.data[0]
 
-            user = response.data
-
-            if user and len(user) > 0:
-                session["user"] = username
-                return redirect("/menu")
-            else:
-                return "Invalid login"
-
-        except Exception as e:
-            return f"Login error: {str(e)}"
+                if check_password_hash(user["password"], password):
+                    session["user"] = username
+                    return redirect("/")
+                else:
+                    return "wrong password"
+        else:
+            return "User not found"
 
     return render_template("login.html")
 
