@@ -251,25 +251,36 @@ def signup():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+
     if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
+        try:
+            username = request.form.get("username")
+            password = request.form.get("password")
 
-        result = supabase.table("users").select("*").eq("username", username).execute()
-            
-        if result.data:
-                user = result.data[0]
+            result = supabase.table("users").select("*").eq("username", username).execute()
 
-                if check_password_hash(user["password"], password):
-                    session["user"] = username
-                    return redirect("/")
-                else:
-                    return "wrong password"
-        else:
-            return "User not found"
+            if not result.data:
+                return "User not found"
+
+            user = result.data[0]
+
+            if "password" not in user:
+                return "Database error: password field missing"
+
+            if check_password_hash(user["password"], password):
+
+                session["user"] = username
+
+                return redirect("/")
+
+            else:
+                return "Wrong password"
+
+        except Exception as e:
+            print("LOGIN ERROR:", e)
+            return f"Internal Server Error: {e}", 500
 
     return render_template("login.html")
-
 
 # ---------------- MENU ----------------
 
