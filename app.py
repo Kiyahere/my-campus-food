@@ -226,16 +226,20 @@ def create_admins():
 def signup():
     if request.method == "POST":
         username = request.form["username"]
-        password = request.form["password"]
         email = request.form["email"]
+        password = request.form["password"]
+
+        if not username or not email or not password:
+            return "All fields are required", 400
+
 
         hashed_password = generate_password_hash(password)
 
         
         supabase.table("users").insert({
                 "username": username,
-                "password": hashed_password,
                 "email": email,
+                "password": hashed_password
             }).execute()
         
         
