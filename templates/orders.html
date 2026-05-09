@@ -2,9 +2,13 @@
 
 {% for order in orders %}
     <div style="border:1px solid #ccc; padding:10px; margin:10px;">
+
         <p><b>Items:</b> {{ order['items'] }}</p>
         <p><b>Total:</b> ₦{{ order['total'] }}</p>
         <p><b>Status:</b> {{ order['status'] }}</p>
+
+        <p><b>Rider:</b> {{ order['rider'] or "Not assigned yet" }}</p>
+
     </div>
 {% endfor %}
 

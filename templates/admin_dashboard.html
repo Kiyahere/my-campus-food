@@ -63,23 +63,24 @@ background-color: #f5f5f5;
     </select>
 
     <button type="submit">Assign Rider</button>
-</form>
 
-        <a href="{{ url_for('delete_food', id=food['id']) }}"
-           onclick="return confirm('Are you sure?')">
 
-            <button style="
-                background-color:#ff6b00;
-                color:white;
-                border:none;
-                padding:8px 12px;
-                border-radius:5px;
-                cursor:pointer;
-            ">
-                Delete
-            </button>
+    <form action="/delete-food/{{ food['id'] }}" method="POST" onsubmit="return confirm('Are you sure?')">
 
-        </a>
+        <button style="
+           background-color:#ff6b00;
+           color:white;
+           border:none;
+           padding:8px 12px;
+           border-radius:5px;
+           cursor:pointer;
+    ">
+        Delete
+        </button>
+
+    </form>
+
+        
 
     </div>
 

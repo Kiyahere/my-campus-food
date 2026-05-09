@@ -3,21 +3,44 @@
 <a href="/admin_dashboard">Back</a>
 
 <ul>
+
 {% for order in orders %}
+
     <li>
+
         <p><b>User:</b> {{ order["user"] }}</p>
         <p><b>Items:</b> {{ order["items"] }}</p>
         <p><b>Total:</b> ₦{{ order["total"] }}</p>
 
-        <p>
-            <b>Status:</b> 
-           {% if order["status"] == "Pending" %}
-    <a href="/update_order/{{ order['id'] }}" 
-       onclick="return confirm('Mark this order as delivered?')">
-       Mark as Delivered
+        <p><b>Status:</b> {{ order["status"] }}</p>
+
+        <p><b>Rider:</b> {{ order["rider"] or "Not assigned yet" }}</p>
+
+        <!-- 👉 ASSIGN RIDER HERE -->
+        <form method="POST" action="/assign_rider/{{ order['id'] }}">
+
+            <select name="rider">
+                <option>Rider1</option>
+                <option>Rider2</option>
+                <option>Rider3</option>
+            </select>
+
+            <button type="submit">Assign Rider</button>
+
+        </form>
+
+        <!-- MARK AS DELIVERED -->
+        {% if order["status"] == "Pending" %}
+            <a href="/update_order/{{ order['id'] }}" 
+               onclick="return confirm('Mark this order as delivered?')">
+               Mark as Delivered
             </a>
         {% endif %}
+
     </li>
+
     <hr>
+
 {% endfor %}
+
 </ul>

@@ -470,17 +470,30 @@ def view_foods():
 
 
 
-@app.route("/delete_food/<int:id>")
+@app.route("/delete-food/<id>", methods=["POST"])
 def delete_food(id):
     if "admin" not in session:
         return redirect(url_for("/admin_login"))
 
-    conn = get_db()
-    conn.execute("DELETE FROM foods WHERE id = ?", (id,))
-    conn.commit()
-    conn.close()
+    supabase.table("foods").delete().eq("id", id).execute()
 
-    return redirect("/admin")
+    return redirect("/menu")
+
+
+@app.route("/place-order", methods=["POST"])
+def place_order():
+
+    items = request.form.get("items")
+    total = request.form.get("total")
+
+    supabase.table("orders").insert({
+        "items": items,
+        "total": total,
+        "status": "Pending",
+        "rider": None
+    }).execute()
+
+    return redirect("/menu")
 
 
 
@@ -494,6 +507,19 @@ def view_orders():
     conn.close()
 
     return render_template("view_orders.html", orders=orders)
+
+
+@app.route("/assign_rider/<order_id>", methods=["POST"])
+def assign_rider(order_id):
+
+    rider = request.form.get("rider")
+
+    supabase.table("orders").update({
+        "rider": rider,
+        "status": "Assigned"
+    }).eq("id", order_id).execute()
+
+    return redirect("/view_orders")
 
 
 @app.route("/rider_dashboard")
