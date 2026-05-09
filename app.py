@@ -10,6 +10,8 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 
+app = Flask(__name__)
+
 load_dotenv(dotenv_path=".env")
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
