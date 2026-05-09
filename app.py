@@ -5,16 +5,15 @@ import sqlite3
 import requests
 from functools import wraps
 
-from flask import Flask, render_template, render_template_string, request, redirect, session, url_for
-render_template_string
+from flask import Flask, render_template, request,render_template_string, redirect, session, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 
 load_dotenv(dotenv_path=".env")
 
-SUPABASE_URL = os.getenv("https://iieupxswfvxmmcjqzdml.supabase.co")
-SUPABASE_KEY = os.getenv("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpZXVweHN3ZnZ4bW1janF6ZG1sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwOTg0ODIsImV4cCI6MjA5MzY3NDQ4Mn0.90CwhwMvmO-3xKK_wKaGyUx3OyLq-xX2AWpVTdas4Z4")
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
 if not SUPABASE_KEY:
     raise Exception("Missing SUPABASE_KEY environment variable")
