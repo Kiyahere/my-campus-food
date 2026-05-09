@@ -244,7 +244,7 @@ def signup():
             }).execute()
         print("SUPABASE RESULT:", result)
         
-        return "Signup successful! You can now login."
+        return redirect("/login")
 
     return render_template("signup.html")
     
