@@ -6,7 +6,7 @@ import requests
 from functools import wraps
 
 from flask import Flask, render_template, request,render_template_string, redirect, session, url_for
-from werkzeug.security import check_password_hash, generate_password_hash
+from werkzeug.security import generate_password_hash,check_password_hash
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 
@@ -227,16 +227,19 @@ def signup():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
+        email = request.form["email"]
 
-        try:
-            supabase.table("users").insert({
+        hashed_password = generate_password_hash(password)
+
+        
+        supabase.table("users").insert({
                 "username": username,
-                "password": password
+                "password": hashed_password,
+                "email": email,
             }).execute()
-        except Exception as e:
-            return f"Error: {str(e)}"
-
-        return redirect("/login")
+        
+        
+        return "Signup successful! You can now login."
 
     return render_template("signup.html")
     
