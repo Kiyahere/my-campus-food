@@ -13,6 +13,8 @@ from dotenv import load_dotenv
 
 app = Flask(__name__)
 
+app.secret_key = os.environ.get("SECRET_KEY")
+
 load_dotenv(dotenv_path=".env")
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
