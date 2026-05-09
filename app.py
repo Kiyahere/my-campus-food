@@ -1,3 +1,4 @@
+from unittest import result
 from supabase import create_client
 import os
 import uuid
@@ -241,7 +242,7 @@ def signup():
                 "email": email,
                 "password": hashed_password
             }).execute()
-        
+        print("SUPABASE RESULT:", result)
         
         return "Signup successful! You can now login."
 
