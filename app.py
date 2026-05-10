@@ -464,7 +464,7 @@ def add_food():
 
             print("FOOD ADDED SUCCESSFULLY")
 
-            return redirect(url_for("dashboard"))
+            return redirect(url_for("admin_dashboard"))
 
         except Exception as e:
             print("FULL ERROR:", e)
