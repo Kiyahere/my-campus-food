@@ -452,12 +452,13 @@ def add_food():
 
 @app.route("/delete-food/<id>", methods=["POST"])
 def delete_food(id):
+
     if "admin" not in session:
-        return redirect(url_for("/admin_login"))
+        return redirect(url_for("admin_login"))
 
     supabase.table("foods").delete().eq("id", id).execute()
 
-    return redirect("/admin_dashboard")
+    return redirect(url_for("admin_dashboard"))
 
 
 @app.route("/place-order", methods=["POST"])
