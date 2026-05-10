@@ -338,6 +338,7 @@ def test_admins():
 @app.route("/admin_dashboard")
 @admin_required
 def admin_dashboard():
+    print("ADMIN DASHBOARD ROUTE LOADED")
     return render_template("admin_dashboard.html")
 
 
