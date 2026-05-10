@@ -613,22 +613,6 @@ def deliver_order():
 
     return redirect("/rider_dashboard")
 
-@app.route("/assign_rider", methods=["POST"])
-def assign_rider():
-    order_id = request.form["order_id"]
-    rider = request.form["rider"]
-
-    conn = get_db()
-    conn.execute(
-        "UPDATE orders SET rider=?, status='Assigned' WHERE id=?",
-        (rider, order_id)
-    )
-    conn.commit()
-    conn.close()
-
-    return redirect("/admin_dashboard")
-
-
 
 @app.route("/checkout")
 def checkout():
