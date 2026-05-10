@@ -27,39 +27,6 @@ if not SUPABASE_URL:
 
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-HTML = """
-<h2>Supabase Upload Test</h2>
- <form method="POST" enctype="multipart/form-data">
-  <input type="file" name="file">
-  <button type="submit">Upload</button>
-</form>
-
-{% if url %}
-<p>Uploaded successfully!</p>
-<p><a href="{{ url }}" target="_blank">View File</a></p>
-{% endif %}
-"""
-
-@app.route("/test-supabase-upload", methods=["GET", "POST"])
-def test_upload():
-    url = None
-
-    if request.method == "POST":
-        file = request.files.get("file")
-
-        if file:
-            filename = str(uuid.uuid4()) + file.filename
-            file_bytes = file.read()
-
-            supabase.storage.from_("food-images").upload(
-                filename,
-                file_bytes
-            )
-
-            url = supabase.storage.from_("food-images").get_public_url(filename)
-
-    return render_template_string(HTML, url=url)
-
 
 print(f"URL: {SUPABASE_URL}")
 print("KEY:", SUPABASE_KEY[:10] if SUPABASE_KEY else None)
@@ -416,17 +383,10 @@ def add_food():
     if request.method == "POST":
 
         try:
-            print("FORM SUBMITTED")
-
             name = request.form.get("name")
             price = request.form.get("price")
 
-            print("Name:", name)
-            print("Price:", price)
-
             image_file = request.files.get("image")
-
-            print("Image File:", image_file)
 
             image_url = ""
 
@@ -434,58 +394,31 @@ def add_food():
 
                 filename = secure_filename(image_file.filename)
 
-                print("Filename:", filename)
-
                 file_bytes = image_file.read()
 
-                print("Image bytes loaded")
-
-                upload_response = supabase.storage.from_("food-images").upload(
+                supabase.storage.from_("food-images").upload(
                     filename,
-                    file_bytes,
-                    {"content-type": image_file.content_type}
+                    file_bytes
                 )
 
-                print("UPLOAD RESPONSE:", upload_response)
-
                 image_url = f"{SUPABASE_URL}/storage/v1/object/public/food-images/{filename}"
-
-                print("Image URL:", image_url)
 
             conn = get_db()
 
             conn.execute(
-                  "INSERT INTO foods (name, price, image) VALUES (?, ?, ?)",
-                                       (name, price, image_url)
-                  )
+                "INSERT INTO foods (name, price, image) VALUES (?, ?, ?)",
+                (name, price, image_url)
+            )
 
             conn.commit()
             conn.close()
 
-            print("FOOD INSERTED INTO SQLITE")
-
-            print("FOOD ADDED SUCCESSFULLY")
-
             return redirect(url_for("admin_dashboard"))
 
         except Exception as e:
-            print("FULL ERROR:", e)
             return f"ERROR: {e}"
 
     return render_template("add_food.html")
-
-
-
-@app.route("/delete-food/<id>", methods=["POST"])
-def delete_food(id):
-
-    if "admin" not in session:
-        return redirect(url_for("admin_login"))
-
-    supabase.table("foods").delete().eq("id", id).execute()
-
-    return redirect(url_for("admin_dashboard"))
-
 
 @app.route("/place-order", methods=["POST"])
 def place_order():
