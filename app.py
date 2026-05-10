@@ -417,34 +417,58 @@ def add_food():
 
     if request.method == "POST":
 
-        name = request.form.get("name")
-        price = request.form.get("price")
+        try:
+            print("FORM SUBMITTED")
 
-        image_file = request.files.get("image")
+            name = request.form.get("name")
+            price = request.form.get("price")
 
-        image_url = ""
+            print("Name:", name)
+            print("Price:", price)
 
-        if image_file:
+            image_file = request.files.get("image")
 
-            filename = secure_filename(image_file.filename)
+            print("Image File:", image_file)
 
-            file_bytes = image_file.read()
+            image_url = ""
 
-            supabase.storage.from_("food-images").upload(
-                filename,
-                file_bytes,
-                {"content-type": image_file.content_type}
-            )
+            if image_file:
 
-            image_url = f"{SUPABASE_URL}/storage/v1/object/public/food-images/{filename}"
+                filename = secure_filename(image_file.filename)
 
-        supabase.table("foods").insert({
-            "name": name,
-            "price": price,
-            "image": image_url
-        }).execute()
+                print("Filename:", filename)
 
-        return redirect(url_for("admin"))
+                file_bytes = image_file.read()
+
+                print("Image bytes loaded")
+
+                upload_response = supabase.storage.from_("food-images").upload(
+                    filename,
+                    file_bytes,
+                    {"content-type": image_file.content_type}
+                )
+
+                print("UPLOAD RESPONSE:", upload_response)
+
+                image_url = f"{SUPABASE_URL}/storage/v1/object/public/food-images/{filename}"
+
+                print("Image URL:", image_url)
+
+            insert_response = supabase.table("foods").insert({
+                "name": name,
+                "price": price,
+                "image": image_url
+            }).execute()
+
+            print("INSERT RESPONSE:", insert_response)
+
+            print("FOOD ADDED SUCCESSFULLY")
+
+            return redirect(url_for("dashboard"))
+
+        except Exception as e:
+            print("FULL ERROR:", e)
+            return f"ERROR: {e}"
 
     return render_template("add_food.html")
 
