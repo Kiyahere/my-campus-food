@@ -40,7 +40,7 @@ HTML = """
 {% endif %}
 """
 
-@app.route("/test supabase-upload", methods=["GET", "POST"])
+@app.route("/test-supabase-upload", methods=["GET", "POST"])
 def test_upload():
     url = None
 
@@ -211,9 +211,6 @@ def home():
 def test():
     return "Working"
 
-@app.route("/admin_login")
-def admin_login_test():
-    return "Admin route exists"
 
 
 @app.route('/create_admins')
@@ -455,13 +452,17 @@ def add_food():
 
                 print("Image URL:", image_url)
 
-            insert_response = supabase.table("foods").insert({
-                "name": name,
-                "price": price,
-                "image": image_url
-            }).execute()
+            conn = get_db()
 
-            print("INSERT RESPONSE:", insert_response)
+            conn.execute(
+                  "INSERT INTO foods (name, price, image) VALUES (?, ?, ?)",
+                                       (name, price, image_url)
+                  )
+
+            conn.commit()
+            conn.close()
+
+            print("FOOD INSERTED INTO SQLITE")
 
             print("FOOD ADDED SUCCESSFULLY")
 
@@ -669,7 +670,7 @@ def cart():
     total = sum(item["price"] for item in cart)
     return render_template("cart.html", cart=cart, total=total)
 
-@app.route('/admin/foods')
+@app.route('/admin_foods')
 def admin_foods():
     conn = get_db()
     foods = conn.execute("SELECT * FROM foods").fetchall()
