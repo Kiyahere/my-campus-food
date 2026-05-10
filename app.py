@@ -477,7 +477,7 @@ def delete_food(id):
 
     supabase.table("foods").delete().eq("id", id).execute()
 
-    return redirect("/menu")
+    return redirect("/admin_dashboard")
 
 
 @app.route("/place-order", methods=["POST"])
