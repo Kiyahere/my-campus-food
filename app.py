@@ -412,61 +412,41 @@ def verify_payment():
     
 
 # ---------------- ADD FOOD ----------------
-@app.route("/add_food", methods=["GET", "POST"])
+@app.route("/add-food", methods=["GET", "POST"])
 def add_food():
 
-    if "admin" not in session:
-        return redirect("/admin_login")
+    if request.method == "POST":
 
-    if request.method == "GET":
-        return render_template("add_food.html")
+        name = request.form.get("name")
+        price = request.form.get("price")
 
-    name = request.form.get("name")
-    price = request.form.get("price")
-    file = request.files.get("image")
+        image_file = request.files.get("image")
 
-    if not name or not price:
-        return "Missing name or price"
+        image_url = ""
 
-    if not file or file.filename == "":
-        return "No image selected"
+        if image_file:
 
-    filename = file.filename
+            filename = secure_filename(image_file.filename)
 
-    # Read image once
-    file_bytes = file.read()
+            file_bytes = image_file.read()
 
-    # Upload to Supabase Storage
-    supabase.storage.from_("food-images").upload(
-        filename,
-        file_bytes,
-        {"content-type": file.content_type}
-    )
+            supabase.storage.from_("food-images").upload(
+                filename,
+                file_bytes,
+                {"content-type": image_file.content_type}
+            )
 
-    # Get public URL
-    image_url = supabase.storage.from_("food-images").get_public_url(filename)
+            image_url = f"{SUPABASE_URL}/storage/v1/object/public/food-images/{filename}"
 
-    # Save into Supabase database
-    supabase.table("foods").insert({
-        "name": name,
-        "price": int(price),
-        "image": image_url
-    }).execute()
+        supabase.table("foods").insert({
+            "name": name,
+            "price": price,
+            "image": image_url
+        }).execute()
 
-    return redirect("/admin_dashboard")
+        return redirect(url_for("admin"))
 
-
-
-@app.route("/view_foods")
-def view_foods():
-    if "admin" not in session:
-        return redirect("/admin_login")
-
-    conn = get_db()
-    foods = conn.execute("SELECT * FROM foods").fetchall()
-    conn.close()
-
-    return render_template("view_foods.html", foods=foods)
+    return render_template("add_food.html")
 
 
 
