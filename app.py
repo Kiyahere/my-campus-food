@@ -377,7 +377,7 @@ def verify_payment():
     
 
 # ---------------- ADD FOOD ----------------
-@app.route("/add-food", methods=["GET", "POST"])
+@app.route("/add_food", methods=["GET", "POST"])
 def add_food():
 
     if request.method == "POST":
