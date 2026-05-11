@@ -315,7 +315,7 @@ def pay():
     if not cart:
         return "Cart is empty"
 
-    total = sum(item['price'] for item in cart)
+    total = sum(int(item['price']) for item in cart)
 
     url = "https://api.paystack.co/transaction/initialize"
 
@@ -325,57 +325,47 @@ def pay():
     }
 
     data = {
-        "email": session["user_email"],
-        "amount": total * 100
+        "email": session.get("user_email"),
+        "amount": total * 100,
+        "callback_url": "https://your-app.onrender.com/verify_payment"
     }
 
     response = requests.post(url, json=data, headers=headers)
     res = response.json()
 
-    reference = request.args.get("reference")
+    print(res)
 
-    print(res)  # DEBUG
-
-    if res.get("status") and res["data"]["authorization_url"]:
+    if res.get("status"):
         return redirect(res["data"]["authorization_url"])
-    else:
-        return f"Payment failed: {res}"
-    
+
+    return f"Payment failed: {res}"
+
+   
 
 @app.route("/verify_payment")
 def verify_payment():
     reference = request.args.get("reference")
+
+    if not reference:
+        return "No reference found"
 
     url = f"https://api.paystack.co/transaction/verify/{reference}"
 
     headers = {
         "Authorization": f"Bearer {PAYSTACK_SECRET}"
     }
-    data = response.json()
-    if data["data"]["status"] == "success":
-        conn = get_db
-        
+
     response = requests.get(url, headers=headers)
     res = response.json()
-    reference = request.args.get("reference")
 
     print(res)
 
-    conn = get_db()
-    if res["data"]["status"] == "success":
-        order_id = request.args.get("order_id")
-        if order_id:
-            conn.execute(
-                "UPDATE orders SET status = 'Paid' WHERE id = ?",
-                (order_id,)
-            )
-            conn.commit()
-        conn.close()
+    if res.get("data") and res["data"]["status"] == "success":
         session["cart"] = []  # clear cart
-        return  redirect("/payment-success")
-    else:
-        return "Payment Failed"   
-    
+
+        return redirect("/payment-success")
+
+    return "Payment Failed"
 
 # ---------------- ADD FOOD ----------------
 @app.route("/add_food", methods=["GET", "POST"])
