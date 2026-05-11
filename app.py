@@ -403,15 +403,13 @@ def add_food():
 
                 image_url = f"{SUPABASE_URL}/storage/v1/object/public/food-images/{filename}"
 
-            conn = get_db()
+            data = {
+                "name": name,
+                "price": price,
+                "image": image_url
+            }
 
-            conn.execute(
-                "INSERT INTO foods (name, price, image) VALUES (?, ?, ?)",
-                (name, price, image_url)
-            )
-
-            conn.commit()
-            conn.close()
+            supabase.table("foods").insert(data).execute()
 
             return redirect(url_for("admin_dashboard"))
 
@@ -419,6 +417,8 @@ def add_food():
             return f"ERROR: {e}"
 
     return render_template("add_food.html")
+
+
 
 @app.route("/place-order", methods=["POST"])
 def place_order():
