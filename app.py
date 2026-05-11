@@ -315,6 +315,11 @@ def pay():
     if not cart:
         return "Cart is empty"
 
+    email = session.get("user_email")
+
+    if not email:
+        return "User email not found. Please login again."
+
     total = sum(int(item['price']) for item in cart)
 
     url = "https://api.paystack.co/transaction/initialize"
@@ -325,7 +330,7 @@ def pay():
     }
 
     data = {
-        "email": session.get("user_email"),
+        "email": email,
         "amount": total * 100,
         "callback_url": "https://your-app.onrender.com/verify_payment"
     }
