@@ -503,22 +503,29 @@ def test_db():
     conn.close()
     return str(data)
 
-@app.route("/add-to-cart/<int:id>")
+
+@app.route("/add-to-cart/<id>")
 def add_to_cart(id):
-    conn = get_db()
-    food = conn.execute("SELECT * FROM foods WHERE id=?", (id,)).fetchone()
-    conn.close()
+    if "user" not in session:
+        return redirect("/login")
+
+    response = supabase.table("foods").select("*").eq("id", id).execute()
+    food = response.data[0] if response.data else None
 
     if food:
         cart = session.get("cart", [])
+
         cart.append({
             "id": food["id"],
             "name": food["name"],
             "price": food["price"]
         })
+
         session["cart"] = cart
+        session.modified = True
 
     return redirect("/menu")
+
 
 @app.route("/vendor_dashboard")
 def vendor_dashboard():
