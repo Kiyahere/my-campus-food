@@ -303,9 +303,15 @@ def test_admins():
 @admin_required
 def admin_dashboard():
     print("ADMIN DASHBOARD ROUTE LOADED")
-    return render_template("admin_dashboard.html")
 
+    try:
+        response = supabase.table("foods").select("*").execute()
+        foods = response.data
 
+        return render_template("admin_dashboard.html", foods=foods)
+
+    except Exception as e:
+        return f"ERROR: {e}"
 
 @app.route('/pay')
 def pay():
@@ -417,6 +423,16 @@ def add_food():
             return f"ERROR: {e}"
 
     return render_template("add_food.html")
+
+
+@app.route("/delete-food/<id>", methods=["POST"])
+def delete_food(id):
+    try:
+        supabase.table("foods").delete().eq("id", id).execute()
+        return redirect(url_for("admin_dashboard"))
+
+    except Exception as e:
+        return f"ERROR: {e}"
 
 
 
