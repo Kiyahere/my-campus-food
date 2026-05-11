@@ -255,11 +255,10 @@ def menu():
     if "user" not in session:
         return redirect("/login")
 
-    conn = get_db()
-    foods = conn.execute("SELECT * FROM foods").fetchall()
-    conn.close()
+    foods = supabase.table("foods").select("*").execute().data
 
     return render_template("menu.html", foods=foods)
+
 
 
 @app.route('/create_admin')
