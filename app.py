@@ -302,16 +302,12 @@ def test_admins():
 @app.route("/admin_dashboard")
 @admin_required
 def admin_dashboard():
-    print("ADMIN DASHBOARD ROUTE LOADED")
+    
 
-    try:
-        response = supabase.table("foods").select("*").execute()
-        foods = response.data
+    foods = supabase.table("foods").select("*").execute().data
 
-        return render_template("admin_dashboard.html", foods=foods)
-
-    except Exception as e:
-        return f"ERROR: {e}"
+    return render_template("admin_dashboard.html", foods=foods)
+    
 
 @app.route('/pay')
 def pay():
