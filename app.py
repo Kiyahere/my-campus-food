@@ -5,6 +5,7 @@ import uuid
 import sqlite3
 import requests
 from functools import wraps
+import bcrypt
 
 from flask import Flask, render_template, request,render_template_string, redirect, session, url_for
 from werkzeug.security import generate_password_hash,check_password_hash
@@ -201,9 +202,7 @@ def signup():
             return "All fields are required", 400
 
 
-        hashed_password = generate_password_hash(password)
-
-        
+        hashed_password = bcrypt.hashpw(password.encode('utf-8')bcrypt.gensalt()).decode('utf-8')     
         supabase.table("users").insert({
                 "username": username,
                 "email": email,
@@ -226,12 +225,13 @@ def login():
         user = supabase.table("users") \
             .select("*") \
             .eq("username", username) \
-            .eq("password", password) \
             .execute()
-
-        print(user.data)
-
-        if user.data:
+        
+        if user.data: stored_hash = user.data[0]
+        ["password"]
+            
+        if bcrypt.checkpw(password.encode('utf-8'), stored_hash.encode('utf-8')): 
+        
             session["user"] = user.data[0]["username"]
             session["email"] = user.data[0]["email"]
 
