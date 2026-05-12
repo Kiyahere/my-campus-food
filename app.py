@@ -229,11 +229,15 @@ def login():
             .eq("password", password) \
             .execute()
 
+        print(user.data)
+
         if user.data:
             session["user"] = user.data[0]["username"]
             session["email"] = user.data[0]["email"]
 
             return redirect("/dashboard")
+        
+        else: return "Invalid username or password"
 
     return render_template("login.html")
 
