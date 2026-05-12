@@ -227,21 +227,27 @@ def login():
             .select("*") \
             .eq("username", username) \
             .execute()
-        
-        if user.data: stored_hash = user.data[0]
-        ["password"]
-            
-        if bcrypt.checkpw(password.encode('utf-8'), stored_hash.encode('utf-8')): 
-        
-            session["user"] = user.data[0]["username"]
-            session["email"] = user.data[0]["email"]
 
-            return redirect("/dashboard")
-        
-        else: return "Invalid username or password"
+        if user.data:
+
+            stored_hash = user.data[0]["password"]
+
+            if bcrypt.checkpw(
+                password.encode('utf-8'),
+                stored_hash.encode('utf-8')
+            ):
+
+                session["user"] = user.data[0]["username"]
+                session["user_email"] = user.data[0]["email"]
+
+                return redirect("/dashboard")
+
+            else:
+                return "Invalid username or password"
+
+        return "Invalid username or password"
 
     return render_template("login.html")
-
 
 # ---------------- MENU ----------------
 
