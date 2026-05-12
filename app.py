@@ -202,8 +202,9 @@ def signup():
             return "All fields are required", 400
 
 
-        hashed_password = bcrypt.hashpw(password.encode('utf-8')bcrypt.gensalt()).decode('utf-8')     
-        supabase.table("users").insert({
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+        result =  supabase.table("users").insert({
                 "username": username,
                 "email": email,
                 "password": hashed_password
@@ -329,7 +330,7 @@ def pay():
     data = {
         "email": email,
         "amount": total * 100,
-        "callback_url": "https://your-app.onrender.com/verify_payment"
+        "callback_url": "https://my_campus_food.onrender.com/verify_payment"
     }
 
     response = requests.post(url, json=data, headers=headers)
