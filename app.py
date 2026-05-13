@@ -219,35 +219,50 @@ def signup():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+
     if request.method == "POST":
+
         username = request.form["username"]
         password = request.form["password"]
+
+        print("Username entered:", username)
+        print("Password entered:", password)
 
         user = supabase.table("users") \
             .select("*") \
             .eq("username", username) \
             .execute()
 
+        print("User data:", user.data)
+
         if user.data:
 
             stored_hash = user.data[0]["password"]
 
-            if bcrypt.checkpw(
+            print("Stored hash:", stored_hash)
+
+            result = bcrypt.checkpw(
                 password.encode('utf-8'),
                 stored_hash.encode('utf-8')
-            ):
+            )
+
+            print("Password match:", result)
+
+            if result:
 
                 session["user"] = user.data[0]["username"]
-                session["user_email"] = user.data[0]["email"]
 
                 return redirect("/dashboard")
 
             else:
-                return "Invalid username or password"
+                return "Wrong password"
 
-        return "Invalid username or password"
+        else:
+            return "User not found"
 
     return render_template("login.html")
+
+
 
 # ---------------- MENU ----------------
 
