@@ -12,6 +12,7 @@ from werkzeug.security import generate_password_hash,check_password_hash
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 
+
 app = Flask(__name__)
 
 app.secret_key = os.environ.get("SECRET_KEY")
@@ -552,12 +553,7 @@ def delete_cart(item_id):
     session["cart"] = cart
     session.modified = True
 
-    return redirect("/cart")   
-
-
-    @app.route("/test-delete")
-def test_delete():
-    return "DELETE ROUTE WORKS"
+    return redirect("/cart") 
 
 
 @app.route("/vendor_dashboard")
@@ -721,6 +717,11 @@ def rider_login():
             return "Invalid rider login"
 
     return render_template("rider_login.html")
+
+
+    @app.route("/test-delete")
+def test_delete():
+    return "working"
 
 
 
