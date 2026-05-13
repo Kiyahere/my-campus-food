@@ -191,6 +191,7 @@ def create_admins():
     return "Admins created!"
 
 
+
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
     if request.method == "POST":
@@ -252,7 +253,7 @@ def login():
 
                 session["user"] = user.data[0]["username"]
 
-                return redirect("/dashboard")
+                return redirect("/menu")
 
             else:
                 return "Wrong password"
