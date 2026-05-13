@@ -719,7 +719,7 @@ def rider_login():
     return render_template("rider_login.html")
 
 
-    @app.route("/test-delete")
+@app.route("/test-delete")
 def test_delete():
     return "working"
 
