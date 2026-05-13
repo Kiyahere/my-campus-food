@@ -8,7 +8,11 @@
 <h1>Your Cart</h1>
 
 {% for item in cart %}
-    <p>{{ item.name }} - ₦{{ item.price }}</p>
+    <p>{{ item.name }} - ₦{{ item.price }}
+        <a href= "/delete-cart/{{ item.id }}">
+            <button style="background:red; color:white;"> Delete</button>
+        </a>
+    </p>
 {% endfor %}
 
 <h3>Total: ₦{{ total }}</h3>

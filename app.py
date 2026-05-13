@@ -542,6 +542,20 @@ def add_to_cart(id):
     return redirect("/menu")
 
 
+@app.route("/delete-cart-item/<int:item_id>", methods=["POST"])
+def delete_cart_item(item_id):
+
+    if "user" not in session:
+        return redirect("/login")
+
+    supabase.table("cart") \
+        .delete() \
+        .eq("id", item_id) \
+        .execute()
+
+    return redirect("/cart")   
+
+
 @app.route("/vendor_dashboard")
 def vendor_dashboard():
     if "vendor" not in session:
