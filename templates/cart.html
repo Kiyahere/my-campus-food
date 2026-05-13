@@ -9,7 +9,7 @@
 
 {% for item in cart %}
     <p>{{ item.name }} - ₦{{ item.price }}
-        <a href= "/delete-cart/{{ item.id }}">
+        <a href="/delete-cart/{{ item.id }}">
             <button style="background:red; color:white;"> Delete</button>
         </a>
     </p>
