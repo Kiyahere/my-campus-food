@@ -555,6 +555,11 @@ def delete_cart(item_id):
     return redirect("/cart")   
 
 
+    @app.route("/test-delete")
+def test_delete():
+    return "DELETE ROUTE WORKS"
+
+
 @app.route("/vendor_dashboard")
 def vendor_dashboard():
     if "vendor" not in session:
