@@ -543,12 +543,12 @@ def add_to_cart(id):
     return redirect("/menu")
 
 
-@app.route("/delete-cart-item/<int:item_id>")
+@app.route("/delete-cart-item/<item_id>")
 def delete_cart(item_id):
 
     cart = session.get("cart", [])
 
-    cart = [item for item in cart if item["id"] != item_id]
+    cart = [item for item in cart if str(item["id"]) != str(item_id)]
 
     session["cart"] = cart
     session.modified = True
