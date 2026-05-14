@@ -266,7 +266,7 @@ def login():
     return render_template("login.html")
 
 
-    @app.route("/forgot-password", methods=["GET", "POST"])
+@app.route("/forgot-password", methods=["GET", "POST"])
 def forgot_password():
 
     if request.method == "POST":
