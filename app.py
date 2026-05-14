@@ -253,6 +253,7 @@ def login():
             if result:
 
                 session["user"] = user.data[0]["username"]
+                session["user_email"] = user.data[0]["email"]
 
                 return redirect("/menu")
 
