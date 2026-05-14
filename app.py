@@ -266,6 +266,37 @@ def login():
     return render_template("login.html")
 
 
+    @app.route("/forgot-password", methods=["GET", "POST"])
+def forgot_password():
+
+    if request.method == "POST":
+
+        email = request.form["email"]
+        new_password = request.form["new_password"]
+
+        user = supabase.table("users") \
+            .select("*") \
+            .eq("email", email) \
+            .execute()
+
+        if not user.data:
+            return "Email not found"
+
+        hashed_password = bcrypt.hashpw(
+            new_password.encode("utf-8"),
+            bcrypt.gensalt()
+        ).decode("utf-8")
+
+        supabase.table("users") \
+            .update({"password": hashed_password}) \
+            .eq("email", email) \
+            .execute()
+
+        return "Password updated successfully"
+
+    return render_template("forgot_password.html")
+
+
 
 # ---------------- MENU ----------------
 
